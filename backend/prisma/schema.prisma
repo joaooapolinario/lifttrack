@@ -1,0 +1,54 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Usuários
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String
+  createdAt DateTime  @default(now())
+
+  routines  Routine[] // Fichas de treino do usuário
+}
+
+// 2. Exercícios (O Cardápio)
+model Exercise {
+  id          String   @id @default(uuid())
+  name        String
+  muscleGroup String
+  
+  // Relação com os itens da ficha
+  routineItems RoutineItem[] 
+}
+
+// 3. A Ficha de Treino (Ex: "Treino A - Peito")
+model Routine {
+  id        String   @id @default(uuid())
+  name      String   
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  items     RoutineItem[]
+}
+
+// 4. Os Itens da Ficha (Ex: "Supino, 4x10")
+model RoutineItem {
+  id         String   @id @default(uuid())
+  sets       Int      
+  reps       Int      
+  
+  routineId  String
+  routine    Routine  @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+}
