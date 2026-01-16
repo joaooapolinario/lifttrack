@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import Link from 'next/link'
+import { LoginForm } from "@/components/login-form";
 
 export default function Home() {
   const router = useRouter();
@@ -60,51 +61,56 @@ export default function Home() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-100">
-      <Card className="w-[350px]">
-        <CardHeader className="text-center">
-          <CardTitle>Entrar</CardTitle>
-          <CardDescription>Acesse seus treinos e rotinas.</CardDescription>
-        </CardHeader>
-
-        <form onSubmit={handleLogin}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-          </CardContent>
-
-          <CardFooter className="flex flex-col pt-6">
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Entrando..." : "Acessar"}
-            </Button>
-            <div className="text-center text-sm text-slate-500 mt-4">
-              Não tem conta?{" "}
-              <Link href="/register" className="text-blue-600 hover:underline">
-                Criar conta grátis
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
+    <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+      <div className="w-full max-w-sm md:max-w-3xl">
+        <LoginForm />
+      </div>
     </div>
+    // <div className="flex items-center justify-center min-h-screen bg-slate-100">
+    //   <Card className="w-[350px]">
+    //     <CardHeader className="text-center">
+    //       <CardTitle>Entrar</CardTitle>
+    //       <CardDescription>Acesse seus treinos e rotinas.</CardDescription>
+    //     </CardHeader>
+
+    //     <form onSubmit={handleLogin}>
+    //       <CardContent className="space-y-4">
+    //         <div className="space-y-2">
+    //           <Label htmlFor="email">Email</Label>
+    //           <Input
+    //             id="email"
+    //             type="email"
+    //             placeholder="seu@email.com"
+    //             value={email}
+    //             onChange={(e) => setEmail(e.target.value)}
+    //             required
+    //           />
+    //         </div>
+    //         <div className="space-y-2">
+    //           <Label htmlFor="password">Senha</Label>
+    //           <Input
+    //             id="password"
+    //             type="password"
+    //             value={password}
+    //             onChange={(e) => setPassword(e.target.value)}
+    //             required
+    //           />
+    //         </div>
+    //       </CardContent>
+
+    //       <CardFooter className="flex flex-col pt-6">
+    //         <Button type="submit" className="w-full" disabled={loading}>
+    //           {loading ? "Entrando..." : "Acessar"}
+    //         </Button>
+    //         <div className="text-center text-sm text-slate-500 mt-4">
+    //           Não tem conta?{" "}
+    //           <Link href="/register" className="text-blue-600 hover:underline">
+    //             Criar conta grátis
+    //           </Link>
+    //         </div>
+    //       </CardFooter>
+    //     </form>
+    //   </Card>
+    // </div>
   );
 }
