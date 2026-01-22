@@ -22,7 +22,12 @@ export class RoutinesController {
   findOne(@Param('id') id: string) {
     return this.routinesService.findOne(id);
   }
-
+  
+  @Patch('reorder')
+  reorder(@Request() req, @Body() body: { items: { id: string; position: number }[] }) {
+    return this.routinesService.reorder(req.user.userId, body.items);
+  }
+  
   @Patch(':id')
   update(@Request() req, @Param('id') id: string, @Body() updateRoutineDto: any) {
     return this.routinesService.update(id, req.user.sub, updateRoutineDto);
@@ -32,4 +37,5 @@ export class RoutinesController {
   remove(@Request() req, @Param('id') id: string) {
     return this.routinesService.remove(id, req.user.sub);
   }
+
 }

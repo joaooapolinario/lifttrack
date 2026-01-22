@@ -35,8 +35,9 @@ model Routine {
   id        String   @id @default(uuid())
   name      String   
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  position  Int      @default(0)
+
   items     RoutineItem[]
 }
 
@@ -48,7 +49,8 @@ model RoutineItem {
   
   routineId  String
   routine    Routine  @relation(fields: [routineId], references: [id], onDelete: Cascade)
-  
+  position   Int      @default(0)
+
   exerciseId String
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
 }

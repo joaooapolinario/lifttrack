@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { Play } from 'lucide-react';
 
 interface Exercise { name: string; muscleGroup: string; }
 interface RoutineItem { id: string; sets: number; reps: number; exercise: Exercise; }
@@ -53,10 +54,18 @@ export default function ViewRoutinePage({ params }: { params: Promise<{ id: stri
             <h1 className="text-2xl font-bold">{routine.name}</h1>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 mb-6">
+            <Button 
+              className="flex-1 bg-green-600 hover:bg-green-700 h-12 text-lg font-bold gap-2 shadow-md"
+              onClick={() => router.push(`/dashboard/routines/${routineId}/active`)}
+            >
+              <Play fill="currentColor" size={20} /> INICIAR TREINO
+            </Button>
+          </div>
+
+          <div className="flex gap-2 justify-end mb-4">
             <Button 
               variant="outline" 
-              className="border-amber-500 text-amber-600 hover:bg-amber-50"
               onClick={() => router.push(`/dashboard/routines/${routineId}/edit`)}
             >
               Editar ✎
