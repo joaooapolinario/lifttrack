@@ -86,11 +86,11 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
   if (loading) return <div className="p-8 text-center">Carregando treino...</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       
       {/* --- CABEÇALHO (Título e Frase) --- */}
-      <div className="px-4 pt-6 pb-2 bg-white">
-        <h1 className="text-2xl font-black text-slate-900 leading-tight">
+      <div className="px-4 pt-6 pb-2 bg-background">
+        <h1 className="text-2xl font-black text-primary leading-tight">
             {routine.name}
         </h1>
         <p className="text-sm text-slate-500 italic mt-1 font-medium">
@@ -100,12 +100,12 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
 
       {/* --- BARRA FIXA (Cronômetro e Ações) --- */}
       {/* 'sticky top-0' faz ele colar no teto. z-50 garante que fique por cima de tudo */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b shadow-sm px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b shadow-sm px-4 py-3 flex items-center justify-between">
         
         {/* Lado Esquerdo: O Tempo */}
         <div className="flex flex-col">
             <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Tempo</span>
-            <span className="text-3xl font-mono font-bold text-blue-600 tracking-tighter">
+            <span className="text-3xl font-mono font-bold text-primary tracking-tighter">
                 {formatTime(seconds)}
             </span>
         </div>
@@ -144,30 +144,30 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
                         cursor-pointer transition-all duration-200
                         flex items-center justify-between p-4 rounded-xl border-2
                         ${isDone 
-                            ? 'bg-green-50 border-green-200 opacity-60' // Estilo quando feito
-                            : 'bg-white border-transparent shadow-sm hover:border-blue-200' // Estilo normal
+                            ? 'bg-background border-green-200 opacity-50' // Estilo quando feito
+                            : 'bg-background border-primary/10 shadow-sm '// Estilo normal
                         }
                     `}
                 >
                     {/* Infos do Exercício */}
                     <div className="flex-1 pr-4">
-                        <h3 className={`font-bold text-lg ${isDone ? 'text-green-800 line-through' : 'text-slate-900'}`}>
+                        <h3 className={`font-bold text-lg ${isDone ? 'text-green-800 line-through' : 'text-slate-200'}`}>
                             {item.exercise.name}
                         </h3>
                         <div className="flex gap-4 mt-1">
-                            <span className="text-sm font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                            <span className="text-sm font-medium text-slate-200 bg-primary/10 px-2 py-0.5 rounded">
                                 {item.sets} Séries
                             </span>
-                            <span className="text-sm font-medium text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                            <span className="text-sm font-medium text-slate-200 bg-primary/10 px-2 py-0.5 rounded">
                                 {item.reps} Reps
                             </span>
                         </div>
                     </div>
 
                     {/* O Checkbox Gigante Visual */}
-                    <div className={`${isDone ? 'text-green-500' : 'text-slate-200'}`}>
+                    <div className={`${isDone ? 'text-green-500' : 'text-primary'}`}>
                         {isDone ? (
-                            <CheckCircle2 size={40} fill="currentColor" className="text-green-100" />
+                            <CheckCircle2 size={40} fill="currentColor" className="text-green-200" />
                         ) : (
                             <Circle size={40} />
                         )}

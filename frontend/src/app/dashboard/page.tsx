@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { GripVertical } from 'lucide-react'; // Ícone de "agarrar"
+import { GripVertical, Menu } from 'lucide-react';
 
 interface Routine {
   id: string;
@@ -54,7 +54,7 @@ export default function DashboardPage() {
     // 2. Enviar para o Backend
     try {
       const token = localStorage.getItem('token');
-      
+
       // Monta o payload com a nova posição de cada item
       const updates = newRoutines.map((routine, index) => ({
         id: routine.id,
@@ -73,14 +73,14 @@ export default function DashboardPage() {
   if (loading) return <div className="p-8 text-center">Carregando seus treinos...</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-6">
-        
+
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-slate-900">Meus Treinos</h1>
+          <h1 className="text-3xl font-bold text-primary">Meus Treinos</h1>
           <Link href="/dashboard/routines/create">
-            <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-              + Nova Ficha
+            <Button size="lg" className="bg-primary hover:bg-primary/80">
+              + Novo Treino
             </Button>
           </Link>
         </div>
@@ -97,8 +97,8 @@ export default function DashboardPage() {
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="routines-list">
               {(provided) => (
-                <div 
-                  {...provided.droppableProps} 
+                <div
+                  {...provided.droppableProps}
                   ref={provided.innerRef}
                   className="grid gap-4"
                 >
@@ -108,28 +108,41 @@ export default function DashboardPage() {
                         <div
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          className="bg-white"
+                          className=""
                         >
-                          <Card className="hover:shadow-md transition-shadow group">
+                          <Card className="hover:shadow-md transition-shadow group border-l-4 border-l-transparent hover:border-l-primary/50">
+
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                              <div className="flex items-center gap-3">
-                                {/* Ícone de arrastar (Handle) */}
-                                <div {...provided.dragHandleProps} className="cursor-grab text-slate-300 hover:text-slate-600">
-                                  <GripVertical size={20} />
-                                </div>
+
+                              <div className="flex flex-col gap-1">
                                 <CardTitle className="text-xl">
-                                  <Link href={`/dashboard/routines/${routine.id}`} className="hover:underline decoration-blue-500 underline-offset-4">
+                                  <Link
+                                    href={`/dashboard/routines/${routine.id}`}
+                                    className="hover:underline decoration-primary underline-offset-4"
+                                  >
                                     {routine.name}
                                   </Link>
                                 </CardTitle>
+                                <p className="text-xs text-muted-foreground">
+                                  {routine.items.length} exercícios
+                                </p>
                               </div>
-                              <span className="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600">
-                                {routine.items.length} exercícios
-                              </span>
+
+                              <div
+                                {...provided.dragHandleProps}
+                                className="p-2 -mr-2 cursor-grab text-muted-foreground/20 hover:text-foreground transition-colors touch-none"
+                                title="Arraste para reordenar"
+                              >
+                                <Menu size={20} />
+                              </div>
+
                             </CardHeader>
+
                             <CardContent>
-                              <p className="text-sm text-slate-500 line-clamp-1">
-                                {routine.items.slice(0, 3).map(i => i.exercise.name).join(', ')}
+                              <p className="text-sm text-muted-foreground line-clamp-1">
+                                {routine.items.length > 0
+                                  ? routine.items.slice(0, 3).map(i => i.exercise.name).join(', ')
+                                  : 'Nenhum exercício ainda.'}
                                 {routine.items.length > 3 && '...'}
                               </p>
                             </CardContent>

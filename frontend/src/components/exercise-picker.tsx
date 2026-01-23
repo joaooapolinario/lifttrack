@@ -101,10 +101,10 @@ export function ExercisePicker({ exercises, onSelect, triggerButton }: ExerciseP
                 <div
                   key={ex.id}
                   onClick={() => handleSelect(ex.id)}
-                  className="flex items-center justify-between p-3 hover:bg-slate-100 rounded-md cursor-pointer transition-colors"
+                  className="flex items-center justify-between p-3 hover:bg-primary/10 rounded-md cursor-pointer transition-colors"
                 >
                   <div>
-                    <div className="font-medium text-slate-900">{ex.name}</div>
+                    <div className="font-medium text-primary">{ex.name}</div>
                     <div className="text-xs text-slate-500">{ex.muscleGroup}</div>
                   </div>
                   {/* Seta ou ícone de + */}

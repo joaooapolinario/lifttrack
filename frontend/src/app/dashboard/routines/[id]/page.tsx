@@ -6,7 +6,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Play } from 'lucide-react';
+import { Play, Edit, Trash2, ArrowLeft } from 'lucide-react';
 
 interface Exercise { name: string; muscleGroup: string; }
 interface RoutineItem { id: string; sets: number; reps: number; exercise: Exercise; }
@@ -42,41 +42,51 @@ export default function ViewRoutinePage({ params }: { params: Promise<{ id: stri
   if (!routine) return <div className="p-8">Carregando...</div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-3xl mx-auto space-y-6">
-        
-        {/* CABEÇALHO DE AÇÕES */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-lg shadow-sm border">
-          <div>
-            <Button variant="ghost" className="mb-1 pl-0 hover:bg-transparent" onClick={() => router.push('/dashboard')}>
-              ← Voltar para Fichas
+
+        <div className="space-y-6 mb-8">
+
+          <div className="flex items-start justify-between gap-4">
+
+            <div>
+              <Button variant="outline" className="mb-1 pl-0 hover:bg-slate-800 hover:text-white" onClick={() => router.push('/dashboard')}>
+              <ArrowLeft size={18} />
+              Voltar
             </Button>
-            <h1 className="text-2xl font-bold">{routine.name}</h1>
+              <h1 className="text-3xl font-bold tracking-tight">{routine.name}</h1>
+              <p className="text-muted-foreground text-sm mt-1">
+                {routine.items.length} exercícios planejados
+              </p>
+            </div>
+
+            <div className="flex gap-2 shrink-0">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => router.push(`/dashboard/routines/${routineId}/edit`)}
+              >
+                <Edit size={18} />
+              </Button>
+
+              <Button
+                variant="destructive"
+                size="icon"
+                onClick={handleDelete}
+              >
+                <Trash2 size={18} />
+              </Button>
+            </div>
           </div>
 
-          <div className="flex gap-2 mb-6">
-            <Button 
-              className="flex-1 bg-green-600 hover:bg-green-700 h-12 text-lg font-bold gap-2 shadow-md"
-              onClick={() => router.push(`/dashboard/routines/${routineId}/active`)}
-            >
-              <Play fill="currentColor" size={20} /> INICIAR TREINO
-            </Button>
-          </div>
+          <Button
+            className="w-full bg-green-600 hover:bg-green-700 h-14 text-lg font-bold shadow-md uppercase tracking-wide"
+            onClick={() => router.push(`/dashboard/routines/${routineId}/active`)}
+          >
+            <Play fill="currentColor" className="mr-2" size={20} />
+            Iniciar Treino
+          </Button>
 
-          <div className="flex gap-2 justify-end mb-4">
-            <Button 
-              variant="outline" 
-              onClick={() => router.push(`/dashboard/routines/${routineId}/edit`)}
-            >
-              Editar ✎
-            </Button>
-            <Button 
-              variant="destructive"
-              onClick={handleDelete}
-            >
-              Excluir 🗑️
-            </Button>
-          </div>
         </div>
 
         {/* LISTA DE EXERCÍCIOS */}
@@ -89,11 +99,11 @@ export default function ViewRoutinePage({ params }: { params: Promise<{ id: stri
                   <div className="text-lg font-bold">{item.exercise?.name}</div>
                   <div className="text-sm text-slate-500">{item.exercise?.muscleGroup}</div>
                 </div>
-                <div className="text-right bg-slate-100 px-4 py-2 rounded-lg">
-                  <div className="font-mono text-lg font-bold text-slate-800">
+                <div className="text-right bg-primary/10 px-4 py-2 rounded-lg">
+                  <div className="font-mono text-lg font-bold text-primary">
                     {item.sets} <span className="text-xs font-normal text-slate-500">SETS</span>
                   </div>
-                  <div className="font-mono text-lg font-bold text-slate-800">
+                  <div className="font-mono text-lg font-bold text-primary">
                     {item.reps} <span className="text-xs font-normal text-slate-500">REPS</span>
                   </div>
                 </div>
