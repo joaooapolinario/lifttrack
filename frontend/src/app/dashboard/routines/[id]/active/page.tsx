@@ -6,8 +6,9 @@ import { api } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, Square, CheckCircle2, Circle } from 'lucide-react';
 import { toast } from 'sonner';
+import { Trophy, PartyPopper } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-// Frases motivacionais aleatórias
 const QUOTES = [
   "Sem dor, sem ganho!",
   "A única repetição ruim é a que você não fez.",
@@ -17,11 +18,23 @@ const QUOTES = [
   "O corpo alcança o que a mente acredita.",
   "Descanse, mas não desista."
 ];
+const MOTIVATIONAL_QUOTES = [
+  "O corpo alcança o que a mente acredita. Excelente treino!",
+  "Não é sobre perfeição, é sobre consistência. Parabéns!",
+  "Mais um tijolo na construção da sua melhor versão.",
+  "O treino de hoje é a força de amanhã. Mandou bem!",
+  "Você não está apenas suando, está brilhando. Bom trabalho!",
+  "A dor que você sente hoje será a força que você sentirá amanhã."
+];
 
 export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const router = useRouter();
-  
+
+  const [startedAt] = useState(new Date());
+  const [isSaving, setIsSaving] = useState(false);
+
+
   const [routine, setRoutine] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
@@ -30,7 +43,9 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
   
   const [completedItems, setCompletedItems] = useState<string[]>([]);
   
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [quote, setQuote] = useState("");
+  
 
   useEffect(() => {
     setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
@@ -74,12 +89,49 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const handleFinish = () => {
-    // Aqui no futuro vamos salvar o log do treino
-    const confirm = window.confirm("Deseja finalizar o treino?");
-    if (confirm) {
-        toast.success(`Treino finalizado em ${formatTime(seconds)}!`);
-        router.push('/dashboard');
+  const handleFinish = async () => {
+    const confirm = window.confirm("Deseja finalizar e salvar o treino?");
+    if (!confirm) return;
+
+    setIsSaving(true);
+
+    try {
+      const token = localStorage.getItem('token');
+      
+      const itemsToSend = routine.items
+        .filter((item: any) => completedItems.includes(item.id))
+        .map((item: any) => ({
+          exerciseId: item.exerciseId,
+          sets: Number(item.sets),
+          reps: Number(item.reps),
+          weight: 0 // Futuramente colocaremos um input de peso aqui
+        }));
+
+      if (itemsToSend.length === 0) {
+        alert("Você precisa marcar pelo menos um exercício como feito!");
+        setIsSaving(false);
+        return;
+      }
+
+      await api.post('/history', {
+        routineId: routine.id,
+        name: routine.name,
+        startedAt: startedAt.toISOString(),
+        endedAt: new Date().toISOString(), 
+        items: itemsToSend
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const randomQuote = MOTIVATIONAL_QUOTES[Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)]
+      setQuote(randomQuote);
+      setShowSuccessModal(true);
+      
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao salvar o treino.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -88,7 +140,6 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
   return (
     <div className="min-h-screen bg-background flex flex-col">
       
-      {/* --- CABEÇALHO (Título e Frase) --- */}
       <div className="px-4 pt-6 pb-2 bg-background">
         <h1 className="text-2xl font-black text-primary leading-tight">
             {routine.name}
@@ -98,11 +149,8 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
         </p>
       </div>
 
-      {/* --- BARRA FIXA (Cronômetro e Ações) --- */}
-      {/* 'sticky top-0' faz ele colar no teto. z-50 garante que fique por cima de tudo */}
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b shadow-sm px-4 py-3 flex items-center justify-between">
         
-        {/* Lado Esquerdo: O Tempo */}
         <div className="flex flex-col">
             <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Tempo</span>
             <span className="text-3xl font-mono font-bold text-primary tracking-tighter">
@@ -110,7 +158,6 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
             </span>
         </div>
 
-        {/* Lado Direito: Botões de Controle */}
         <div className="flex gap-2">
             <Button 
                 size="icon" 
@@ -125,14 +172,15 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
                 variant="destructive" 
                 className="h-12 px-6 rounded-full font-bold"
                 onClick={handleFinish}
+                disabled={isSaving}
             >
-                FIM
+                {isSaving ? "SALVANDO..." : "FIM"}
             </Button>
         </div>
       </div>
 
-      {/* --- LISTA DE EXERCÍCIOS --- */}
-      <div className="flex-1 p-4 space-y-3 pb-20"> {/* pb-20 para dar espaço no final */}
+
+      <div className="flex-1 p-4 space-y-3 pb-20">
         {routine.items.map((item: any) => {
             const isDone = completedItems.includes(item.id);
 
@@ -177,6 +225,35 @@ export default function ActiveWorkoutPage({ params }: { params: Promise<{ id: st
         })}
       </div>
 
+      
+
+        {/* MODAL DE SUCESSO (Aparece ao terminar) */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <Card className="w-full max-w-sm bg-card border-primary/50 shadow-2xl shadow-primary/20 animate-in zoom-in-95 duration-300">
+            <CardHeader className="text-center pb-2">
+              <div className="mx-auto bg-primary/20 p-4 rounded-full mb-4 ring-2 ring-primary/50">
+                <Trophy className="w-12 h-12 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-black text-primary flex items-center justify-center gap-2">
+                <PartyPopper size={24} />
+                TREINO CONCLUÍDO!
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center pt-2">
+              <p className="text-muted-foreground font-medium mb-8 leading-relaxed">
+                "{quote}"
+              </p>
+              <Button 
+                className="w-full h-12 text-lg font-bold shadow-lg"
+                onClick={() => router.push('/dashboard')}
+              >
+                Ver meu Progresso
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

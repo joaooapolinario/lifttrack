@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ExercisesModule } from './exercises/exercises.module';
 import { RoutinesModule } from './routines/routines.module';
+import { HistoryModule } from './history/history.module';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { RoutinesModule } from './routines/routines.module';
       isGlobal: true,
     }),
     
-    PrismaModule, UsersModule, AuthModule, ExercisesModule, RoutinesModule],
+    PrismaModule, UsersModule, AuthModule, ExercisesModule, RoutinesModule, HistoryModule],
   controllers: [AppController],
   providers: [AppService],
 })

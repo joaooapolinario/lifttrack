@@ -18,6 +18,7 @@ model User {
   createdAt DateTime  @default(now())
 
   routines  Routine[] // Fichas de treino do usuário
+  history WorkoutHistory[] // Histórico de treinos
 }
 
 // 2. Exercícios (O Cardápio)
@@ -27,7 +28,8 @@ model Exercise {
   muscleGroup String
   
   // Relação com os itens da ficha
-  routineItems RoutineItem[] 
+  routineItems RoutineItem[]
+  historyItems WorkoutHistoryItem[] 
 }
 
 // 3. A Ficha de Treino (Ex: "Treino A - Peito")
@@ -39,6 +41,7 @@ model Routine {
   position  Int      @default(0)
 
   items     RoutineItem[]
+  history WorkoutHistory[]
 }
 
 // 4. Os Itens da Ficha (Ex: "Supino, 4x10")
@@ -53,4 +56,36 @@ model RoutineItem {
 
   exerciseId String
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model WorkoutHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  routineId String?  // Opcional: caso a ficha original seja apagada, o histórico fica
+  name      String   // Nome do treino na época (ex: "Treino A")
+  startedAt DateTime
+  endedAt   DateTime
+  
+  // Relações
+  user    User     @relation(fields: [userId], references: [id])
+  routine Routine? @relation(fields: [routineId], references: [id])
+  items   WorkoutHistoryItem[]
+
+  @@map("workout_histories")
+}
+
+model WorkoutHistoryItem {
+  id               String @id @default(uuid())
+  workoutHistoryId String
+  exerciseId       String
+  
+  sets   Int
+  reps   Int
+  weight Float? // Campo novo! Importante para saber a carga usada
+
+  // Relações
+  history  WorkoutHistory @relation(fields: [workoutHistoryId], references: [id], onDelete: Cascade)
+  exercise Exercise       @relation(fields: [exerciseId], references: [id])
+
+  @@map("workout_history_items")
 }
